@@ -4,6 +4,8 @@ import com.yetgim.ecommerce.dto.categories.CategoryAddRequestDto;
 import com.yetgim.ecommerce.dto.categories.CategoryResponseDto;
 import com.yetgim.ecommerce.dto.categories.CategoryUpdateRequestDto;
 import com.yetgim.ecommerce.entities.Category;
+import com.yetgim.ecommerce.exceptions.types.BusinessException;
+import com.yetgim.ecommerce.exceptions.types.NotFoundException;
 import com.yetgim.ecommerce.repository.CategoryRepository;
 import com.yetgim.ecommerce.service.abstracts.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +44,7 @@ public class CategoryManager  implements CategoryService {
     public CategoryResponseDto getById(int id) {
         Optional<Category> category = categoryRepository.findById(id);
         if (category.isEmpty()){
-            throw  new RuntimeException("İlgili id değerine göre bir kategori bulunamamıştır.");
+            throw  new NotFoundException("İlgili id değerine göre bir kategori bulunamamıştır.");
         }
 
         CategoryResponseDto response = new CategoryResponseDto(category.get().getId(), category.get().getName());
@@ -51,17 +53,29 @@ public class CategoryManager  implements CategoryService {
 
     @Override
     public void add(CategoryAddRequestDto dto) {
-        Category category = new Category();
-        category.setName(dto.name());
-        this.categoryRepository.save(category);
+
+           Optional<Category> category = categoryRepository.getByCategoryName(dto.name());
+
+           if (category.isPresent()){
+               throw new BusinessException("Eklemek istediğiniz kategori benzersiz olmalıdır.");
+           }
+
+        Category newCategory = new Category();
+        newCategory.setName(dto.name());
+        this.categoryRepository.save(newCategory);
     }
 
     @Override
     public void update(CategoryUpdateRequestDto dto) {
-        Category category = categoryRepository.findById(dto.id()).orElse(null);
-        if(category == null){
-            System.out.println("Category not found");
+
+        Category category = categoryRepository.findById(dto.id())
+                .orElseThrow(()-> new NotFoundException("İlgili Kategori bulunamadı."));
+
+
+        if (category.getName().equals(dto.name())){
+            throw new BusinessException("Kategori adı hiç değişmedi.");
         }
+
         category.setId(dto.id());
         category.setName(dto.name());
         categoryRepository.save(category);
