@@ -1,10 +1,13 @@
 package com.yetgim.ecommerce.controller;
 
+import com.yetgim.ecommerce.dto.products.ProductAddRequestDto;
 import com.yetgim.ecommerce.entities.Product;
 import com.yetgim.ecommerce.repository.ProductRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.yetgim.ecommerce.service.abstracts.ProductService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +16,10 @@ import java.util.List;
 @RequestMapping("/api/products")
 
 // http://localhost:8080/api/products
+@RequiredArgsConstructor
 public class ProductsController {
 
-
+private final ProductService productService;
 
 
 
@@ -24,6 +28,12 @@ public class ProductsController {
     @GetMapping("/getall")
     public List<Product> getProducts() {
         return new ArrayList<>();
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<String> add(@RequestBody ProductAddRequestDto dto){
+        productService.add(dto);
+        return ResponseEntity.status(HttpStatus.OK).body("Ürün eklendi.");
     }
 
 }

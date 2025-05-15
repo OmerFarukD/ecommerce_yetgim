@@ -6,6 +6,7 @@ import com.yetgim.ecommerce.dto.categories.CategoryUpdateRequestDto;
 import com.yetgim.ecommerce.entities.Category;
 import com.yetgim.ecommerce.exceptions.types.BusinessException;
 import com.yetgim.ecommerce.exceptions.types.NotFoundException;
+import com.yetgim.ecommerce.exceptions.types.ValidationException;
 import com.yetgim.ecommerce.repository.CategoryRepository;
 import com.yetgim.ecommerce.service.abstracts.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +55,11 @@ public class CategoryManager  implements CategoryService {
     @Override
     public void add(CategoryAddRequestDto dto) {
 
+
+        if (dto.name().length()<2){
+            throw new ValidationException("İsim alanı minimum 2 haneli olmalıdır.");
+        }
+
            Optional<Category> category = categoryRepository.getByCategoryName(dto.name());
 
            if (category.isPresent()){
@@ -83,12 +89,8 @@ public class CategoryManager  implements CategoryService {
 
     @Override
     public void delete(int id) {
-        Category category = this.categoryRepository.findById(id).orElse(null);
-
-        if (category == null){
-            System.out.println("Category Not Found");
-        }
-
+        Category category = this.categoryRepository.findById(id)
+                .orElseThrow(()-> new NotFoundException("İlgili Kategori Bulunamadı."));
         categoryRepository.delete(category);
     }
 }

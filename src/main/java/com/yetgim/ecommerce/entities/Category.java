@@ -17,6 +17,11 @@ import java.util.List;
 @Entity
 public class Category {
 
+
+    public Category(Integer id) {
+        this.id = id;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_id")
