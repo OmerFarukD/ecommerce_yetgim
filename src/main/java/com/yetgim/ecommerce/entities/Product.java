@@ -11,8 +11,6 @@ import lombok.*;
 @AllArgsConstructor
 public class Product {
 
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
@@ -25,7 +23,7 @@ public class Product {
     @Column
     private int stock;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 

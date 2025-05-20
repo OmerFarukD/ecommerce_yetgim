@@ -1,5 +1,4 @@
 package com.yetgim.ecommerce.controller;
-
 import com.yetgim.ecommerce.dto.categories.CategoryAddRequestDto;
 import com.yetgim.ecommerce.dto.categories.CategoryResponseDto;
 import com.yetgim.ecommerce.dto.categories.CategoryUpdateRequestDto;
@@ -7,7 +6,6 @@ import com.yetgim.ecommerce.service.abstracts.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -45,11 +43,7 @@ public class CategoriesController {
 
     @PutMapping("/update")
     public ResponseEntity<String> update(@RequestBody CategoryUpdateRequestDto dto){
-
-
             categoryService.update(dto);
             return ResponseEntity.ok("Category Modified.");
     }
-
-
 }

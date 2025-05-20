@@ -7,6 +7,7 @@ import com.yetgim.ecommerce.entities.Category;
 import com.yetgim.ecommerce.entities.Product;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 @Component
 public class ProductManuelMapper implements ProductMapperBase{
@@ -23,16 +24,35 @@ public class ProductManuelMapper implements ProductMapperBase{
 
     @Override
     public Product convertToEntity(ProductUpdateRequestDto dto) {
-        return null;
+        Product product = new Product();
+        product.setId(dto.id());
+        product.setName(dto.name());
+        product.setPrice(dto.price());
+
+        product.setStock(dto.stock());
+        product.setCategory(new Category(dto.categoryId()));
+        return product;
     }
 
     @Override
     public ProductResponseDto convertToResponse(Product product) {
-        return null;
+        return new ProductResponseDto(product.getId(),
+                product.getName(),
+                product.getPrice(),
+                product.getStock(),
+                product.getCategory().getName()
+                );
     }
 
     @Override
     public List<ProductResponseDto> convertToResponseList(List<Product> products) {
-        return List.of();
+
+        List<ProductResponseDto> dtos = new ArrayList<>();
+        for (Product product : products){
+            ProductResponseDto dto =convertToResponse(product);
+            dtos.add(dto);
+        }
+
+        return dtos;
     }
 }
