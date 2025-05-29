@@ -1,18 +1,21 @@
 package com.yetgim.ecommerce.service.concretes;
 
+import com.yetgim.ecommerce.aop.annotations.PerformanceLogger;
 import com.yetgim.ecommerce.dto.products.ProductAddRequestDto;
 import com.yetgim.ecommerce.dto.products.ProductResponseDto;
 import com.yetgim.ecommerce.dto.products.ProductUpdateRequestDto;
 import com.yetgim.ecommerce.entities.Product;
-import com.yetgim.ecommerce.exceptions.types.BusinessException;
 import com.yetgim.ecommerce.exceptions.types.NotFoundException;
 import com.yetgim.ecommerce.repository.ProductRepository;
 import com.yetgim.ecommerce.service.abstracts.ProductService;
 import com.yetgim.ecommerce.service.mappers.products.ProductMapperBase;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 @Service
+@CacheConfig(cacheNames = "products")
 public class ProductManager implements ProductService {
 
     private final ProductRepository productRepository;
@@ -25,7 +28,6 @@ public class ProductManager implements ProductService {
 
     @Override
     public void add(ProductAddRequestDto dto) {
-        nameMustBeUnique(dto.name());
         Product product = mapper.convertToEntity(dto);
         productRepository.save(product);
     }
@@ -48,6 +50,7 @@ public class ProductManager implements ProductService {
     }
 
     @Override
+    @Cacheable(key = "#root.methodName")
     public List<ProductResponseDto> getAll() {
         List<Product> products = this.productRepository.findAll();
         List<ProductResponseDto> dtos = this.mapper.convertToResponseList(products);
@@ -55,6 +58,7 @@ public class ProductManager implements ProductService {
     }
 
     @Override
+    @PerformanceLogger
     public ProductResponseDto getById(int id) {
                Product product = productRepository.findById(id)
                 .orElseThrow(()-> new NotFoundException("İlgili Ürün bulunamadı."));
@@ -95,21 +99,16 @@ public class ProductManager implements ProductService {
     }
 
     @Override
+
     public List<ProductResponseDto> getAllByCategoryIdAndPriceRange(int categoryId, double min, double max) {
         List<Product> products = this.productRepository.findAllByCategory_IdAndPriceBetween(categoryId,min,max);
         return mapper.convertToResponseList(products);
     }
 
     @Override
+
     public List<ProductResponseDto> getAllByCategoryName(String name) {
         List<Product> products = this.productRepository.getAllByCategory_Name(name);
         return mapper.convertToResponseList(products);
-    }
-
-    private  void  nameMustBeUnique(String name){
-        boolean isPresent = this.productRepository.existsByName(name);
-        if (isPresent){
-            throw new BusinessException("Ürün ismi benzersiz olmalıdır."+ name+" isminde bir ürün mevcuttur.");
-        }
     }
 }
