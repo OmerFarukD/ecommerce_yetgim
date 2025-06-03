@@ -38,7 +38,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(x->
                         x.requestMatchers("api/auth/**",
                                         "api/categories/getall",
-                                        "api/categories/get")
+                                        "api/categories/get",
+                                        "api/carts/**"
+                                        )
                                 .permitAll()
 
                                 .requestMatchers(HttpMethod.GET,"api/products/**").permitAll()

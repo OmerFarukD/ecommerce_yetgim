@@ -1,6 +1,7 @@
 package com.yetgim.ecommerce.security;
 
-import com.yetgim.ecommerce.entities.Role;
+
+
 import com.yetgim.ecommerce.entities.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
